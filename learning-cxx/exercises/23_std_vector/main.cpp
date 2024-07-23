@@ -12,7 +12,7 @@ int main(int argc, char **argv) {
         //std::cout << sizeof(vec);
         ASSERT(sizeof(vec) == 24, "Fill in the correct value.");
         int ans[]{1, 2, 3, 4, 5};
-        ASSERT(std::memcmp(&vec.front(), ans, sizeof(ans)) == 0, "Fill in the correct values.");
+        ASSERT(std::memcmp(vec.data(), ans, sizeof(ans)) == 0, "Fill in the correct values.");
     }
     {
         std::vector<double> vec{1, 2, 3, 4, 5};
