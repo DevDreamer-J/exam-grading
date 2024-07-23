@@ -12,7 +12,7 @@ int main(int argc, char **argv) {
         //std::cout << sizeof(vec);
         ASSERT(sizeof(vec) == 24, "Fill in the correct value.");
         int ans[]{1, 2, 3, 4, 5};
-        ASSERT(std::memcmp(vec.data(), ans, sizeof(ans)) == 0, "Fill in the correct values.");
+        ASSERT(memcmp(vec.data(), ans, sizeof(ans)) == 0, "Fill in the correct values.");
     }
     {
         std::vector<double> vec{1, 2, 3, 4, 5};
@@ -20,7 +20,7 @@ int main(int argc, char **argv) {
             ASSERT(vec.size() == 5, "Fill in the correct value.");
             ASSERT(sizeof(vec) == 24, "Fill in the correct value.");
             double ans[]{1, 2, 3, 4, 5};
-            ASSERT(std::memcmp(&vec.front(), ans, sizeof(ans)) == 0, "Fill in the correct values.");
+            ASSERT(memcmp(&vec.front(), ans, sizeof(ans)) == 0, "Fill in the correct values.");
         }
         {
             vec.push_back(6);
@@ -59,13 +59,11 @@ int main(int argc, char **argv) {
         ASSERT(vec[0] == 'z', "Make this assertion pass.");
         ASSERT(vec[47] == 'z', "Make this assertion pass.");
         ASSERT(vec.size() == 48, "Make this assertion pass.");
-        //std::cout << sizeof(vec);
         ASSERT(sizeof(vec) == 24, "Fill in the correct value.");
         {
             auto capacity = vec.capacity();
             vec.resize(16);
             ASSERT(vec.size() == 16, "Fill in the correct value.");
-            //std::cout << vec.capacity();
             ASSERT(vec.capacity() == 48, "Fill in a correct identifier.");
         }
         {

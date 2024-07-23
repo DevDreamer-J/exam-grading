@@ -15,7 +15,7 @@ struct Tensor4D {
             shape[i] = shape_[i];
         }
         data = new T[size];
-        std::memcpy(data, data_, size * sizeof(T));
+        memcpy(data, data_, size * sizeof(T));
     }
     ~Tensor4D() {
         delete[] data;
@@ -42,8 +42,8 @@ struct Tensor4D {
             others.shape[2] * others.shape[3],
             others.shape[3]};
         for (int i = 0; i < this->shape[0] * this->shape[1] * this->shape[2] * this->shape[3]; i++) {
-            int p_this[3] = {0};
-            int p_others[3] = {0};
+            unsigned int p_this[3] = {0};
+            unsigned int p_others[3] = {0};
             {
                 int k = i;
                 p_this[0] = k / weidu_this[1];
