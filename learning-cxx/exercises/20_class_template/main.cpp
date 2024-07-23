@@ -6,13 +6,13 @@ template<class T>
 struct Tensor4D {
     unsigned int shape[4];
     T *data;
+    unsigned int size = 0;
 
     Tensor4D(unsigned int const shape_[4], T const *data_) {
-        unsigned int size = 1;
         // TODO: 填入正确的 shape 并计算 size
         size = sizeof(shape_) / sizeof(shape_[0]);
         data = new T[size];
-        std::memcpy(data, data_, size * sizeof(T));
+        std::wmemcpy(data, data_, size * sizeof(T));
     }
     ~Tensor4D() {
         delete[] data;
@@ -27,8 +27,39 @@ struct Tensor4D {
     // `others` 长度为 1 但 `this` 长度不为 1 的维度将发生广播计算。
     // 例如，`this` 形状为 `[1, 2, 3, 4]`，`others` 形状为 `[1, 2, 1, 4]`，
     // 则 `this` 与 `others` 相加时，3 个形状为 `[1, 2, 1, 4]` 的子张量各自与 `others` 对应项相加。
+    int p_shape1_to_shape2(unsigned int const shape_1[4], unsigned int const shape_2[4],int p1) {
+        int p_shape1[3]{
+            shape_1[1] * shape_1[2] * shape_1[3],
+            shape_1[2] * shape_1[3],
+            shape_1[3]};
+        int k_p_1[3]{0, 0, 0};
+
+        int p_shape2[3]{
+            shape_2[1] * shape_2[2] * shape_2[3],
+            shape_2[2] * shape_2[3],
+            shape_2[3]};
+        int k_p_2[3]{0, 0, 0};
+        for (int i = 0; i < 3; i++) {
+            k_p_1[i] = p1 / p_shape1[i];
+            if (p1 - p_shape1[i] > 0) {
+                p1 -= p_shape1[i];
+            }
+        }
+        for (int i = 0; i < 3; i++) {
+            if (k_p_1[i] < p_shape2[i]) {
+                k_p_2[i] = k_p_1[i];
+            } else {
+                k_p_2[i] = p_shape2[i] - 1;
+            }
+        }
+        return k_p_2[0] * p_shape2[1] + k_p_2[1] * p_shape2[2] + k_p_2[0];
+    }
+
     Tensor4D &operator+=(Tensor4D const &others) {
         // TODO: 实现单向广播的加法
+        for (int i = 0; i < others.size; i++) {
+            this.data = others.data + p_shape1_to_shape2(this->shape, others.shape, i);
+        }
         return *this;
     }
 };
