@@ -12,7 +12,7 @@ struct Tensor4D {
         // TODO: 填入正确的 shape 并计算 size
         size = sizeof(shape_) / sizeof(shape_[0]);
         data = new T[size];
-        std::wmemcpy(data, data_, size * sizeof(T));
+        std::memcpy(data, data_, size * sizeof(T));
     }
     ~Tensor4D() {
         delete[] data;
