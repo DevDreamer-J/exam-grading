@@ -1,5 +1,5 @@
 ﻿#include "../exercise.h"
-
+#include <cstring>
 // READ: 类模板 <https://zh.cppreference.com/w/cpp/language/class_template>
 
 template<class T>
@@ -41,7 +41,7 @@ struct Tensor4D {
             others.shape[1] * others.shape[2] * others.shape[3],
             others.shape[2] * others.shape[3],
             others.shape[3]};
-        for (int i = 0; i < this->shape[0] * this->shape[1] * this->shape[2] * this->shape[3]; i++) {
+        for (unsigned int i = 0; i < this->shape[0] * this->shape[1] * this->shape[2] * this->shape[3]; i++) {
             unsigned int p_this[3] = {0};
             unsigned int p_others[3] = {0};
             {
