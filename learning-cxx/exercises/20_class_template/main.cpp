@@ -6,13 +6,16 @@ template<class T>
 struct Tensor4D {
     unsigned int shape[4];
     T *data;
-    unsigned int size = 0;
 
     Tensor4D(unsigned int const shape_[4], T const *data_) {
         // TODO: 填入正确的 shape 并计算 size
-        size = sizeof(shape_) / sizeof(shape_[0]);
+        unsigned int size = 1;
+        for (int i = 0; i < 4; i++) {
+            size = size * shape_[i];
+            shape[i] = shape_[i];
+        }
         data = new T[size];
-        std::memcpy(data, data_, size * sizeof(T));
+        memcpy(data, data_, size * sizeof(T));
     }
     ~Tensor4D() {
         delete[] data;
@@ -27,41 +30,39 @@ struct Tensor4D {
     // `others` 长度为 1 但 `this` 长度不为 1 的维度将发生广播计算。
     // 例如，`this` 形状为 `[1, 2, 3, 4]`，`others` 形状为 `[1, 2, 1, 4]`，
     // 则 `this` 与 `others` 相加时，3 个形状为 `[1, 2, 1, 4]` 的子张量各自与 `others` 对应项相加。
-    int p_shape1_to_shape2(unsigned int const shape_1[4], unsigned int const shape_2[4],int p1) {
-        int p_shape1[3]{
-            shape_1[1] * shape_1[2] * shape_1[3],
-            shape_1[2] * shape_1[3],
-            shape_1[3]};
-        int k_p_1[3]{0, 0, 0};
-
-        int p_shape2[3]{
-            shape_2[1] * shape_2[2] * shape_2[3],
-            shape_2[2] * shape_2[3],
-            shape_2[3]};
-        int k_p_2[3]{0, 0, 0};
-        for (int i = 0; i < 3; i++) {
-            k_p_1[i] = p1 / p_shape1[i];
-            if (p1 - p_shape1[i] > 0) {
-                p1 -= p_shape1[i];
-            }
-        }
-        for (int i = 0; i < 3; i++) {
-            if (k_p_1[i] < p_shape2[i]) {
-                k_p_2[i] = k_p_1[i];
-            } else {
-                k_p_2[i] = p_shape2[i] - 1;
-            }
-        }
-        return k_p_2[0] * p_shape2[1] + k_p_2[1] * p_shape2[2] + k_p_2[0];
-    }
 
     Tensor4D &operator+=(Tensor4D const &others) {
         // TODO: 实现单向广播的加法
-        for (int i = 0; i < others.size; i++) {
-            this.data = others.data + p_shape1_to_shape2(this->shape, others.shape, i);
+        unsigned int weidu_this[3] = {
+            this->shape[1] * this->shape[2] * this->shape[3],
+            this->shape[2] * this->shape[3],
+            this->shape[3]};
+        unsigned int weidu_others[3] = {
+            others.shape[1] * others.shape[2] * others.shape[3],
+            others.shape[2] * others.shape[3],
+            others.shape[3]};
+        for (int i = 0; i < this->shape[0] * this->shape[1] * this->shape[2] * this->shape[3]; i++) {
+            int p_this[3] = {0};
+            int p_others[3] = {0};
+            {
+                int k = i;
+                p_this[0] = k / weidu_this[1];
+                k = k % weidu_this[1];
+                p_this[1] = k / weidu_this[2];
+                k = k % weidu_this[2];
+                p_this[2] = k;
+            }
+            for (int j = 0; j < 3; j++) {
+                if (p_this[j] < weidu_others[j]) {
+                    p_others[j] = p_this[j];
+                } else {
+                    p_others[j] = weidu_others[j]-1;
+                }
+            }
+            this->data[i] = this->data[i] + others.data[p_others[0] * weidu_others[1] + p_others[1] * weidu_others[2] + p_others[2]];
         }
         return *this;
-    }
+    };
 };
 
 // ---- 不要修改以下代码 ----
@@ -134,8 +135,8 @@ int main(int argc, char **argv) {
         auto t0 = Tensor4D(s0, d0);
         auto t1 = Tensor4D(s1, d1);
         t0 += t1;
-        for (unsigned int i = 0; i < sizeof(d0) / sizeof(int); i++) {
-            ASSERT(t0.data[i] == t0.data[i] + 1, "Every element of t0 should be incremented by 1 after adding t1 to it.");
+        for (unsigned int i = 0; i < sizeof(d0) / sizeof(double); i++) {
+            ASSERT(t0.data[i] == d0[i] + 1, "Every element of t0 should be incremented by 1 after adding t1 to it.");
         }
     }
 }
