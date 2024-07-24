@@ -2,3 +2,6 @@
 [submodule "rustlings"]
 	path = rustlings
 	url = https://github.com/DevDreamer-J/rustlings.git
+[submodule "learning-cxx"]
+	path = learning-cxx
+	url = https://github.com/DevDreamer-J/learning-cxx.git
