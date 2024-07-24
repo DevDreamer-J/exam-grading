@@ -1,4 +1,1 @@
 
-[submodule "exams/rustlings"]
-	path = exams/rustlings
-	url = https://github.com/DevDreamer-J/rustlings.git
